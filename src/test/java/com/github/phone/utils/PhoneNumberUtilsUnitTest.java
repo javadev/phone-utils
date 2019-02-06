@@ -794,7 +794,7 @@ public class PhoneNumberUtilsUnitTest {
 
     @Test
     public void removeAllNonNumeric() {
-        assertEquals(new Long(4745037118l), PhoneNumberUtils.removeAllNonNumeric("+4745037118"));
+        assertEquals(Long.valueOf(4745037118l), PhoneNumberUtils.removeAllNonNumeric("+4745037118"));
         assertNull(PhoneNumberUtils.removeAllNonNumeric("6607130507876641740295491524545"));
     }
 
