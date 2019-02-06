@@ -61,18 +61,18 @@ public class PhoneNumberUtilsUnitTest {
     @Test
     public void shouldTellTheNumberDoesNotHaveTheCountryCode() {
         for (String number : phones) {
-            String phone = number.substring(number.indexOf('-')+1);
+            String phone = number.substring(number.indexOf('-') + 1);
             boolean hasCountryCode = PhoneNumberUtils.hasCountryCode(phone);
             assertThat(hasCountryCode, is(false));
         }
 
         for (String number : specialPhones) {
-            String phone = number.substring(number.indexOf('-')+1);
+            String phone = number.substring(number.indexOf('-') + 1);
             try {
                 phone = PhoneNumberUtils.normalizePhoneNumber(phone);
                 fail();
-            } catch (Exception ex){
-                //ex.printStackTrace();
+            } catch (Exception expected) {
+                // expected
             }
             boolean hasCountryCode = PhoneNumberUtils.hasCountryCode(phone);
             assertThat(hasCountryCode, is(false));
@@ -102,31 +102,33 @@ public class PhoneNumberUtilsUnitTest {
     public void getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist() {
         {
             String fullPhoneNumber = "4745037118";
-            try{
+            try {
                 PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
                 fail("should fail");
-            }catch(PhoneNumberParsingException e){
+            } catch (PhoneNumberParsingException e) {
                 assertNotNull(e);
             }
         }
         {
             String fullPhoneNumber = "+4745037118";
-            Phonenumber.PhoneNumber phoneNumber = PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
+            Phonenumber.PhoneNumber phoneNumber =
+                PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
             assertEquals(47, phoneNumber.getCountryCode());
             assertEquals(45037118L, phoneNumber.getNationalNumber());
             assertTrue(phoneNumber.hasCountryCode());
         }
-
         {
             String fullPhoneNumber = "16507139923";
-            Phonenumber.PhoneNumber phoneNumber = PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
+            Phonenumber.PhoneNumber phoneNumber =
+                PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
             assertEquals(1, phoneNumber.getCountryCode());
             assertEquals(6507139923L, phoneNumber.getNationalNumber());
             assertTrue(phoneNumber.hasCountryCode());
         }
         {
             String fullPhoneNumber = "+16507139923";
-            Phonenumber.PhoneNumber phoneNumber = PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
+            Phonenumber.PhoneNumber phoneNumber =
+                PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(fullPhoneNumber);
             assertEquals(1, phoneNumber.getCountryCode());
             assertEquals(6507139923L, phoneNumber.getNationalNumber());
             assertTrue(phoneNumber.hasCountryCode());
@@ -135,7 +137,6 @@ public class PhoneNumberUtilsUnitTest {
 
     @Test
     public void getNationalNumber() {
-
         {
             String fullPhoneNumber = "6507139923";
             long nationalNumber = PhoneNumberUtils.getNationalNumber(fullPhoneNumber);
@@ -166,15 +167,12 @@ public class PhoneNumberUtilsUnitTest {
             long nationalNumber = PhoneNumberUtils.getNationalNumber(fullPhoneNumber);
             assertEquals(16507139923L, nationalNumber);
         }
-        {
-            Long nationalNumber = PhoneNumberUtils.getNationalNumber("Per Vervik");
-            assertNull(nationalNumber);
-        }
-        {
-            assertNull(PhoneNumberUtils.getNationalNumber(null));
-            assertNull(PhoneNumberUtils.getNationalNumber(""));
-            assertNull(PhoneNumberUtils.getNationalNumber("  "));
-        }
+        Long nationalNumber = PhoneNumberUtils.getNationalNumber("Per Vervik");
+        assertNull(nationalNumber);
+
+        assertNull(PhoneNumberUtils.getNationalNumber(null));
+        assertNull(PhoneNumberUtils.getNationalNumber(""));
+        assertNull(PhoneNumberUtils.getNationalNumber("  "));
     }
 
     @Test
@@ -196,8 +194,6 @@ public class PhoneNumberUtilsUnitTest {
         assertFalse(PhoneNumberUtils.areNationalNumbersSame("Check Balance", "16508393890"));
         assertFalse(PhoneNumberUtils.areNationalNumbersSame("16508393890", "Check Balance"));
         assertTrue(PhoneNumberUtils.areNationalNumbersSame("+380968340152", "+380968340152"));
-
-        // assertTrue(com.bipper.phone.utils.PhoneNumberUtils.areNationalNumbersSame("+*$(),#p", "+*$(),#p"));
     }
 
     @Test(expected = PhoneNumberParsingException.class)
@@ -223,9 +219,9 @@ public class PhoneNumberUtilsUnitTest {
         shouldAppendTheCountryCodeIfMissingHelper("+47-08888888");
     }
 
-    private void shouldAppendTheCountryCodeIfMissingHelper(String number){
+    private void shouldAppendTheCountryCodeIfMissingHelper(String number) {
         String prefix = number.substring(0, number.indexOf('-'));
-        String phone = number.substring(number.indexOf('-')+1);
+        String phone = number.substring(number.indexOf('-') + 1);
         String phoneNumber = appendCountryCodeIfMissingAndNormalize(phone, prefix);
         assertNotNull(phoneNumber);
     }
@@ -241,22 +237,22 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void appendCountryCodeIfMissingAndNormalize_null() {
+    public void appendCountryCodeIfMissingAndNormalizeNull() {
         appendCountryCodeIfMissingAndNormalize(null, null);
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void appendCountryCodeIfMissingAndNormalize_empty() {
+    public void appendCountryCodeIfMissingAndNormalizeEmpty() {
         appendCountryCodeIfMissingAndNormalize("", "");
     }
 
     @Test
-    public void appendCountryCodeIfMissingAndNormalize_norwegianNumberWithDouble00AndSuggestAmericanCountryCode() {
+    public void appendCountryCodeIfMissingAndNormalizeNorwegianNumberWithDouble00AndSuggestAmericanCountryCode() {
         assertEquals("+4790022909", appendCountryCodeIfMissingAndNormalize("004790022909", "1"));
     }
 
     @Test
-    public void appendCountryCodeIfMissingAndNormalize_norwegianNumberWithDouble00AndSuggestNorwegianCountryCode() {
+    public void appendCountryCodeIfMissingAndNormalizeNorwegianNumberWithDouble00AndSuggestNorwegianCountryCode() {
         assertEquals("+4790022909", appendCountryCodeIfMissingAndNormalize("004790022909", "+47"));
     }
 
@@ -294,17 +290,16 @@ public class PhoneNumberUtilsUnitTest {
         }
     }
 
-    private void getNationalNumberFromFullPhoneNumberHelper(String number){
+    private void getNationalNumberFromFullPhoneNumberHelper(String number) {
         String prefix = number.substring(0, number.indexOf('-'));
-        String phone = number.substring(number.indexOf('-')+1);
+        String phone = number.substring(number.indexOf('-') + 1);
 
         Phonenumber.PhoneNumber phoneNumber = PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumber(number);
 
         String nationalNumber = PhoneNumberUtils.getPhoneNumberWithoutCountryCodeFromFullPhoneNumber(number);
-        if(PhoneNumberUtils.isItalianOrUnknownNumber(number)){
+        if (PhoneNumberUtils.isItalianOrUnknownNumber(number)) {
             assertEquals(phone, nationalNumber);
-        }
-        else{
+        } else {
             assertEquals(String.valueOf(phoneNumber.getNationalNumber()), nationalNumber);
         }
     }
@@ -313,21 +308,21 @@ public class PhoneNumberUtilsUnitTest {
     public void shouldGetPhoneNumberWithoutCountryCode() {
         for (String number : phones) {
             String prefix = number.substring(0, number.indexOf('-'));
-            String phone = number.substring(number.indexOf('-')+1);
+            String phone = number.substring(number.indexOf('-') + 1);
             String phoneNumber = PhoneNumberUtils.getPhoneWithoutCountryCode(number, prefix);
             assertThat(phoneNumber, is(phone));
         }
 
         for (String number : specialPhones) {
             String prefix = number.substring(0, number.indexOf('-'));
-            String phone = number.substring(number.indexOf('-')+1);
+            String phone = number.substring(number.indexOf('-') + 1);
             String phoneNumber = PhoneNumberUtils.getPhoneWithoutCountryCode(number, prefix);
             assertNotNull(phoneNumber);
         }
     }
 
     @Test
-    public void isValidFullPhoneNumberHelper_checkLandLineNumbers() {
+    public void isValidFullPhoneNumberHelperCheckLandLineNumbers() {
         assertTrue(PhoneNumberUtils.isValidFullPhoneNumberHelper("+18005555555"));
     }
 
@@ -351,19 +346,19 @@ public class PhoneNumberUtilsUnitTest {
         {
             assertFalse(isPossibleFullPhoneNumber("+475555566666"));
             assertFalse(PhoneNumberUtils.isValidFullPhoneNumberHelper("+475555566666"));
-            try{
+            try {
                 appendCountryCodeIfMissingAndNormalize("+475555566666", "+47");
                 fail("should fail");
-            } catch(PhoneNumberParsingException e){
+            } catch (PhoneNumberParsingException e) {
                 // should come here
             }
         }
 
         {
-            try{
+            try {
                 appendCountryCodeIfMissingAndNormalize("*/()#/", "+47");
                 fail("should fail");
-            } catch(PhoneNumberParsingException e){
+            } catch (PhoneNumberParsingException e) {
                 // should come here
             }
         }
@@ -372,10 +367,10 @@ public class PhoneNumberUtilsUnitTest {
             assertFalse(isPossibleFullPhoneNumber("45037118"));
             assertFalse(PhoneNumberUtils.isValidFullPhoneNumberHelper("45037118"));
             assertEquals("+4745037118", appendCountryCodeIfMissingAndNormalize("45037118", "+47"));
-            try{
+            try {
                 appendCountryCodeIfMissingAndNormalize("45037118", null);
                 fail("Should fail");
-            } catch(PhoneNumberParsingException e){
+            } catch (PhoneNumberParsingException e) {
                 // should come here
             }
         }
@@ -594,31 +589,31 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test
-    public void formatPhoneNumber_NorwegianNumber() {
+    public void formatPhoneNumberNorwegianNumber() {
         String formatedNumber = PhoneNumberUtils.formatPhoneNumber("+47", "45037118");
         assertEquals("4745037118", formatedNumber);
     }
 
     @Test
-    public void formatPhoneNumber_BritishNumberWithLeadingZero() {
+    public void formatPhoneNumberBritishNumberWithLeadingZero() {
         String formatedNumber = PhoneNumberUtils.formatPhoneNumber("+44", "07956185515");
         assertEquals("447956185515", formatedNumber);
     }
 
     @Test
-    public void formatPhoneNumber_ukrainian() {
+    public void formatPhoneNumberUkrainian() {
         String formatedNumber = PhoneNumberUtils.formatPhoneNumber("+380", "0636977529");
         assertEquals("380636977529", formatedNumber);
     }
 
     @Test
-    public void formatPhoneNumber_Null() {
+    public void formatPhoneNumberNull() {
         String formatedNumber = PhoneNumberUtils.formatPhoneNumber(null, null);
         assertTrue(formatedNumber.isEmpty());
     }
 
     @Test
-    public void formatPhoneNumber_Empty() {
+    public void formatPhoneNumberEmpty() {
         String formatedNumber = PhoneNumberUtils.formatPhoneNumber("", "");
         assertTrue(formatedNumber.isEmpty());
     }
@@ -708,7 +703,8 @@ public class PhoneNumberUtilsUnitTest {
         assertFalse(PhoneNumberUtils.isValidFullPhoneNumberHelper(phoneNumber));
         assertFalse(isPossibleFullPhoneNumber(phoneNumber));
 
-        Phonenumber.PhoneNumber phoneNumber1 = PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(phoneNumber);
+        Phonenumber.PhoneNumber phoneNumber1 =
+            PhoneNumberUtils.getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(phoneNumber);
         assertNotNull(phoneNumber1);
     }
 
@@ -794,7 +790,7 @@ public class PhoneNumberUtilsUnitTest {
 
     @Test
     public void removeAllNonNumeric() {
-        assertEquals(Long.valueOf(4745037118l), PhoneNumberUtils.removeAllNonNumeric("+4745037118"));
+        assertEquals(Long.valueOf(4745037118L), PhoneNumberUtils.removeAllNonNumeric("+4745037118"));
         assertNull(PhoneNumberUtils.removeAllNonNumeric("6607130507876641740295491524545"));
     }
 
@@ -812,12 +808,12 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void getCountryCodeFromFullPhoneNumber_failNotFullPhoneNumber() {
+    public void getCountryCodeFromFullPhoneNumberFailNotFullPhoneNumber() {
         PhoneNumberUtils.getCountryCodeFromFullPhoneNumber("3037261054");
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void getCountryCodeFromFullPhoneNumber_failMissingPlus() {
+    public void getCountryCodeFromFullPhoneNumberFailMissingPlus() {
         PhoneNumberUtils.getCountryCodeFromFullPhoneNumber("4790630185");
     }
 
@@ -909,7 +905,7 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test
-    public void validatePhoneNumbers_nullAndEmpy() {
+    public void validatePhoneNumbersNullAndEmpy() {
 
         // the test
         {
@@ -959,7 +955,7 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test
-    public void parseNumber_threeParameters() {
+    public void parseNumberThreeParameters() {
         {
             Phonenumber.PhoneNumber number = PhoneNumberUtils.parseNumber("+3800636977529", "+47", "45037118");
             assertEquals(380, number.getCountryCode());
@@ -1015,12 +1011,12 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test
-    public void testHasCountryCode_failNotFullNumber() {
+    public void testHasCountryCodeFailNotFullNumber() {
         assertFalse(PhoneNumberUtils.hasCountryCode(47, "45454545"));
     }
 
     @Test
-    public void testHasCountryCode_failNotPossibleNumber() {
+    public void testHasCountryCodeFailNotPossibleNumber() {
         assertFalse(PhoneNumberUtils.hasCountryCode(47, "+478587845454545"));
     }
 
@@ -1033,17 +1029,17 @@ public class PhoneNumberUtilsUnitTest {
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void testGenerateFullNorwegianPhoneNumber_tooShort() {
+    public void testGenerateFullNorwegianPhoneNumberTooShort() {
         PhoneNumberUtils.generateFullNorwegianPhoneNumber("4503711");
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void testGenerateFullNorwegianPhoneNumber_notValidPrefix() {
+    public void testGenerateFullNorwegianPhoneNumberNotValidPrefix() {
         PhoneNumberUtils.generateFullNorwegianPhoneNumber("65037118");
     }
 
     @Test(expected = PhoneNumberParsingException.class)
-    public void testGenerateFullNorwegianPhoneNumber_notValidPrefix2() {
+    public void testGenerateFullNorwegianPhoneNumberNotValidPrefix2() {
         PhoneNumberUtils.generateFullNorwegianPhoneNumber("80630185");
     }
 

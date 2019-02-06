@@ -42,6 +42,16 @@ public class PhoneNumberUtils {
         return isPossibleFullPhoneNumber(phoneNumber) && getCountryCodeFromFullPhoneNumber(phoneNumber) == code;
     }
 
+    public static boolean hasCountryCode(String phoneNumber) {
+        String changedPhoneNumber = replaceInternationalCallingPrefixWithPlus(phoneNumber);
+        try {
+            getCountryCodeFromFullPhoneNumber(changedPhoneNumber);
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Given a possible full phone number, starting with +, country code part of number
      * will be returned.
@@ -135,11 +145,11 @@ public class PhoneNumberUtils {
      */
     public static boolean areNationalNumbersSame(String phone1, String phone2) {
 
-        if(phone1 == null || phone1.isEmpty() || phone2 == null || phone2.isEmpty()) {
+        if (phone1 == null || phone1.isEmpty() || phone2 == null || phone2.isEmpty()) {
             return false;
         }
 
-        try{
+        try {
 
             Long number1 = getNationalNumber(phone1);
             Long number2 = getNationalNumber(phone2);
@@ -157,16 +167,16 @@ public class PhoneNumberUtils {
      * number given as input, and with all non numeric characters removed.
      */
     public static Long getNationalNumber(String phoneNumber) {
-        if(phoneNumber == null || phoneNumber.trim().isEmpty()) {
+        if (phoneNumber == null || phoneNumber.trim().isEmpty()) {
             return null;
         }
-        try{
+        try {
 
             PhoneNumber phoneObj = getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(phoneNumber);
 
             return phoneObj.getNationalNumber();
 
-        }catch(PhoneNumberParsingException e) {
+        } catch (PhoneNumberParsingException e) {
             return removeAllNonNumeric(phoneNumber);
         }
     }
@@ -185,15 +195,15 @@ public class PhoneNumberUtils {
         } catch (PhoneNumberParsingException e) {
 
             // if doesnt exist, lets add plus prefix and
-            if(fullPhoneNumber == null || fullPhoneNumber.isEmpty()) {
-                throw new PhoneNumberParsingException("Phone number is null or empty: "+fullPhoneNumber);
+            if (fullPhoneNumber == null || fullPhoneNumber.isEmpty()) {
+                throw new PhoneNumberParsingException("Phone number is null or empty: " + fullPhoneNumber);
             }
             // a full phone number requires plus prefix, add if it doesn't exist
-            if(!fullPhoneNumber.startsWith("+") && fullPhoneNumber.startsWith("1")) {
-                fullPhoneNumber = "+"+fullPhoneNumber;
+            if (!fullPhoneNumber.startsWith("+") && fullPhoneNumber.startsWith("1")) {
+                fullPhoneNumber = "+" + fullPhoneNumber;
             }
 
-            if(isValidFullPhoneNumberHelper(fullPhoneNumber)) {
+            if (isValidFullPhoneNumberHelper(fullPhoneNumber)) {
                 return getPhoneNumberObjFromFullPhoneNumber(fullPhoneNumber);
             }
 
@@ -215,7 +225,7 @@ public class PhoneNumberUtils {
     }
 
     public static List<String> validatePhoneNumbers(List<String> numbers) {
-        if(numbers == null) {
+        if (numbers == null) {
             return new ArrayList<>();
         }
         return numbers.stream()
@@ -229,7 +239,7 @@ public class PhoneNumberUtils {
 
     public static String generateFullPhoneNumber(String defaultCountryCode, String phoneNumber) {
 
-        if(phoneNumber == null) {
+        if (phoneNumber == null) {
             return null;
         }
 
@@ -237,7 +247,7 @@ public class PhoneNumberUtils {
         phoneNumber = removeNonInteger(phoneNumber);
 
         // first check if already valid number
-        if(isValidFullPhoneNumberHelper(phoneNumber)) {
+        if (isValidFullPhoneNumberHelper(phoneNumber)) {
             return phoneNumber;
         }
 
@@ -248,7 +258,7 @@ public class PhoneNumberUtils {
             long phonePrefix = phoneNumberObj.getCountryCode();
             long nationalNumber = phoneNumberObj.getNationalNumber();
 
-            return "+"+phonePrefix + nationalNumber;
+            return "+" + phonePrefix + nationalNumber;
 
         } catch (NumberParseException | NumberFormatException e) {
             log.error(e.getMessage(), e);
@@ -259,8 +269,8 @@ public class PhoneNumberUtils {
     }
 
     public static String generateFullNorwegianPhoneNumber(String phoneNumber) {
-        if(!isValidNorwegianPhoneNumber(phoneNumber)) {
-            throw new PhoneNumberParsingException("Not valid norwegian number: "+phoneNumber);
+        if (!isValidNorwegianPhoneNumber(phoneNumber)) {
+            throw new PhoneNumberParsingException("Not valid norwegian number: " + phoneNumber);
         }
         return generateFullPhoneNumber("+47", phoneNumber);
     }
@@ -270,7 +280,7 @@ public class PhoneNumberUtils {
 
         try {
             // first check if already valid number
-            if(isValidFullPhoneNumberHelper(fullPhoneNumber)) {
+            if (isValidFullPhoneNumberHelper(fullPhoneNumber)) {
                 return phoneUtil.parse(fullPhoneNumber, UNKNOWN_REGION);
             }
             return parseNumber(defaultCountryCode, phoneNumber);
@@ -282,7 +292,7 @@ public class PhoneNumberUtils {
 
     public static PhoneNumber parseNumber(String countryCode, String phoneNumber) throws PhoneNumberParsingException {
 
-        if(phoneNumber == null) {
+        if (phoneNumber == null) {
             throw new PhoneNumberParsingException("Input phone number is null");
         }
 
@@ -292,7 +302,7 @@ public class PhoneNumberUtils {
         try {
 
             // first check if already valid number
-            if(isValidFullPhoneNumberHelper(phoneNumber)) {
+            if (isValidFullPhoneNumberHelper(phoneNumber)) {
                 return phoneUtil.parse(phoneNumber, UNKNOWN_REGION);
             }
 
@@ -310,14 +320,22 @@ public class PhoneNumberUtils {
     }
 
     public static String formatPhoneNumber(PhoneNumber obj) {
-        if(obj == null) {
+        if (obj == null) {
             throw new PhoneNumberParsingException("Obj is null");
         }
-        return "+"+obj.getCountryCode() + obj.getNationalNumber();
+        return "+" + obj.getCountryCode() + obj.getNationalNumber();
+    }
+
+    public static String formatPhoneNumber(String countryCode, String national) {
+        if (countryCode == null || national == null || national.equals("")) {
+            return "";
+        } else {
+            return getCleanCountryCode(countryCode) + getCleanPhoneNumber(national);
+        }
     }
 
     public static PhoneNumberHolder formatPhoneNumberHolder(PhoneNumber obj) {
-        if(obj == null) {
+        if (obj == null) {
             throw new PhoneNumberParsingException("Obj is null");
         }
         return new PhoneNumberHolder(obj.getCountryCode(), obj.getNationalNumber(), formatPhoneNumber(obj));
@@ -379,25 +397,15 @@ public class PhoneNumberUtils {
         return changedPhoneNumber;
     }
 
-    public static boolean hasCountryCode(String phoneNumber) {
-        String changedPhoneNumber = replaceInternationalCallingPrefixWithPlus(phoneNumber);
-        try {
-            getCountryCodeFromFullPhoneNumber(changedPhoneNumber);
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-
     public static String appendCountryCodeIfMissingAndNormalize(String phoneNumber, String countryCode) {
 
-        if(phoneNumber != null && phoneNumber.startsWith("00")) {
-            phoneNumber = "+"+phoneNumber.substring(2);
+        if (phoneNumber != null && phoneNumber.startsWith("00")) {
+            phoneNumber = "+" + phoneNumber.substring(2);
         }
 
         String countryCodeNum;
         String region = null;
-        if(countryCode != null && !countryCode.isEmpty()) {
+        if (countryCode != null && !countryCode.isEmpty()) {
             countryCodeNum = countryCode.replaceAll(JUST_NUMBERS, "");
             region = phoneUtil.getRegionCodeForCountryCode(Integer.parseInt(countryCodeNum));
         }
@@ -434,20 +442,20 @@ public class PhoneNumberUtils {
 
     public static String removeNationalLeadingZero(String phoneNumber) {
         //
-        if(phoneNumber == null || phoneNumber.isEmpty()) {
+        if (phoneNumber == null || phoneNumber.isEmpty()) {
             return phoneNumber;
         }
 
-        try{
+        try {
             // if normalization succeeds, its a perfect valid number with country code, lets just normalize it
             return normalizePhoneNumber(phoneNumber);
 
-        }catch (PhoneNumberParsingException e) {
+        } catch (PhoneNumberParsingException e) {
             // else its probably without country code, lets check if it starts with leading zero
-            if(phoneNumber.startsWith("00")) {
+            if (phoneNumber.startsWith("00")) {
                 return phoneNumber.substring(2);
             }
-            if(phoneNumber.startsWith("0")) {
+            if (phoneNumber.startsWith("0")) {
                 return phoneNumber.substring(1);
             }
             // else just return original string
@@ -459,14 +467,6 @@ public class PhoneNumberUtils {
      * Country code is WITHOUT leading "+" or "00". In phone strings no spaces are allowed.
      * In other words phone numbers consist only from digits, as first digit could not be "0".
      */
-    public static String formatPhoneNumber(String countryCode, String national) {
-        if (countryCode == null || national == null || national.equals("")) {
-            return "";
-        } else {
-            return getCleanCountryCode(countryCode) + getCleanPhoneNumber(national);
-        }
-    }
-
     private static String getCleanCountryCode(String countryCode) {
         String phoneCode = countryCode.replace(" ", "");
         Pattern pattern = Pattern.compile("(\\+|00)(\\d+)");
@@ -507,8 +507,7 @@ public class PhoneNumberUtils {
             if (phoneNumber.startsWith(EMPTY_COUNTRY_CODE)) {
                 shortPhoneNumber = phoneNumber.split(EMPTY_COUNTRY_CODE)[1];
                 return new PhoneNumberHolder(null, shortPhoneNumber);
-            }
-            else {
+            } else {
                 return new PhoneNumberHolder(null, phoneNumber);
             }
         }
