@@ -146,17 +146,15 @@ public class PhoneNumberUtils {
 
             return !(number1 == null || number2 == null) && number1.equals(number2);
 
-        }catch(PhoneNumberParsingException e) {
+        } catch (PhoneNumberParsingException e) {
             return false;
         }
     }
 
-    /**
+    /*
      * Input can be with or without country code, and with or without country prefix at all.
      * We will do our best in the method. If all other fails we will simply return the raw phone
      * number given as input, and with all non numeric characters removed.
-     * @param phoneNumber
-     * @return
      */
     public static Long getNationalNumber(String phoneNumber) {
         if(phoneNumber == null || phoneNumber.trim().isEmpty()) {
@@ -173,12 +171,10 @@ public class PhoneNumberUtils {
         }
     }
 
-    /**
+    /*
      * Be aware that this method is kind of hack.
      *
      * https://groups.google.com/forum/#!topic/libphonenumber-discuss/IqP4cC8udn0
-     * @param fullPhoneNumber
-     * @return
      */
     public static PhoneNumber getPhoneNumberObjFromFullPhoneNumberAddPlusPrefixIfNotExist(String fullPhoneNumber) {
 
@@ -205,11 +201,8 @@ public class PhoneNumberUtils {
         }
     }
 
-    /**
+    /*
      * Checks if number is valid. Adds default country code provided if phone number is not complete.
-     * @param defaultCountryCode
-     * @param phoneNumber
-     * @return
      */
     public static boolean isValidPhoneNumber(String defaultCountryCode, String phoneNumber) {
         return isValidFullPhoneNumberHelper(
@@ -439,12 +432,6 @@ public class PhoneNumberUtils {
     }
 
 
-    /**
-     * Will remove leading zero:
-     * 1)
-     * @param phoneNumber
-     * @return
-     */
     public static String removeNationalLeadingZero(String phoneNumber) {
         //
         if(phoneNumber == null || phoneNumber.isEmpty()) {
@@ -468,11 +455,9 @@ public class PhoneNumberUtils {
         }
     }
 
-    /**
+    /*
      * Country code is WITHOUT leading "+" or "00". In phone strings no spaces are allowed.
      * In other words phone numbers consist only from digits, as first digit could not be "0".
-     * @param national
-     * @return
      */
     public static String formatPhoneNumber(String countryCode, String national) {
         if (countryCode == null || national == null || national.equals("")) {
@@ -500,15 +485,11 @@ public class PhoneNumberUtils {
         return number;
     }
 
-    /**
+    /*
      * Will parse the given phone number.
      *
      * If number starts with null, strip it away. If no "null" prefix and number is not a valid phone number,
      * return null country code and the phone number with what every value the phoneNumber parameters has.
-     *
-     * @param phoneNumber
-     * @return
-     * @throws PhoneNumberParsingException
      */
     public static PhoneNumberHolder parsePhoneNumberWhichAcceptNonNumbers(String phoneNumber)
         throws PhoneNumberParsingException {
@@ -544,19 +525,17 @@ public class PhoneNumberUtils {
         }
 
         StringBuilder str = new StringBuilder();
-        for(int i=0; i < numbers.size(); i++) {
+        for (int i = 0; i < numbers.size(); i++) {
             str.append(numbers.get(i));
-            if(i != numbers.size()-1) {
+            if (i != numbers.size() - 1) {
                 str.append(", ");
             }
         }
         return str.toString();
     }
 
-    /**
+    /*
      * Replace all non int characters with "" except for +
-     * @param myStr
-     * @return
      */
     public static String removeNonInteger(String myStr) {
         if (myStr == null) {
