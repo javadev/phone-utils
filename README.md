@@ -3,7 +3,7 @@ A convenient phone library helping to work with phone numbers.
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.javadev/phone-utils.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.github.javadev%22%20AND%20a%3A%22phone-utils%22)
 [![MIT License](http://img.shields.io/badge/license-MIT-green.svg) ](https://github.com/javadev/phone-utils/blob/master/LICENSE)
-[![Build Status](https://secure.travis-ci.org/javadev/phone-utils.svg)](https://travis-ci.org/javadev/phone-utils)
+[![Java CI](https://github.com/javadev/phone-utils/actions/workflows/maven.yml/badge.svg)](https://github.com/javadev/phone-utils/actions/workflows/maven.yml)
 [![codecov.io](http://codecov.io/github/javadev/phone-utils/coverage.svg?branch=master)](http://codecov.io/github/javadev/phone-utils?branch=master)
 
 Requirements
