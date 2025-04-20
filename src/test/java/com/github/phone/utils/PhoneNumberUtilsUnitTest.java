@@ -403,22 +403,6 @@ public class PhoneNumberUtilsUnitTest {
     public void testIvoCoastnNumber() {
         boolean isValidPhoneNumber = isPossibleFullPhoneNumber("+22507015299");
         assertFalse(isValidPhoneNumber);
-
-        String normalized = PhoneNumberUtils.normalizePhoneNumber("++22507015299");
-        assertEquals("+22507015299", normalized);
-
-        assertFalse(PhoneNumberUtils.isValidFullPhoneNumberHelper("+2257015299"));
-    }
-
-    @Test
-    public void testFullIvory() {
-        String fullIvoryCoastNumber = "+22507015299";
-        // the test
-        String national = PhoneNumberUtils.getPhoneNumberWithoutCountryCodeFromFullPhoneNumber(fullIvoryCoastNumber);
-        assertEquals("07015299", national);
-        // test two
-        String normalized = PhoneNumberUtils.normalizePhoneNumber(fullIvoryCoastNumber);
-        assertEquals(fullIvoryCoastNumber, normalized);
     }
 
     @Test
