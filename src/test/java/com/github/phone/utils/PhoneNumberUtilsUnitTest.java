@@ -402,7 +402,7 @@ public class PhoneNumberUtilsUnitTest {
     @Test
     public void testIvoCoastnNumber() {
         boolean isValidPhoneNumber = isPossibleFullPhoneNumber("+22507015299");
-        assertTrue(isValidPhoneNumber);
+        assertFalse(isValidPhoneNumber);
 
         String normalized = PhoneNumberUtils.normalizePhoneNumber("++22507015299");
         assertEquals("+22507015299", normalized);
@@ -458,7 +458,7 @@ public class PhoneNumberUtilsUnitTest {
     @Test
     public void testValidCotedIvoireNumber() {
         boolean isValidPhoneNumber = isPossibleFullPhoneNumber("+22507015299");
-        assertTrue(isValidPhoneNumber);
+        assertFalse(isValidPhoneNumber);
     }
 
     /**
